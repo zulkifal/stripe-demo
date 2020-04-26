@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stripe API Demo</title>
+</head>
+<body>
+  <button id="item1_add">Add to Cart</button>
+  <button id="item1_del">Remove from Cart</button>
+  <div id="output"></div>
+  <script>
+    myStorage = window.localStorage;
+    var cart;
+    getCart();
+    myStorage.setItem('cart', cart);
+    document.getElementById("item1_add").addEventListener(
+      'click', addToCart
+    );
+    document.getElementById("item1_del").addEventListener(
+      'click', delFromCart
+    );
+    async function addToCart(e){
+      var item_id = e.target.id.split("_")[0];
+      if (!cart) {
+        await getCart();
+        console.log("fetch cart from server");
+        console.log(cart);
+        // addToCart(e);
+      }
+      else {
+        if (cart["items"]) {
+            if (cart["items"][item_id]) {
+              cart["items"][item_id]["qty"] = cart["items"][item_id]["qty"] + 1;
+            }
+            else {
+              cart["items"][item_id] = {};
+              cart["items"][item_id]["qty"] = 1;
+              cart["items"][item_id]["price"] = 10;
+            }
+        }
+      }
+      updateCart();
+      // console.log(cart);
+    }
+    function delFromCart(e){
+      var item_id = e.target.id.split("_")[0];
+      if (window.cart) {
+        delete window.cart["items"][item_id];
+        updateCart();
+      }
+    }
+    async function getCart(){
+      fetch('/cart')
+      .then(function(res) {
+        if (res.status == 200){
+          return res.json();
+        }
+      })
+      .then((data) => {
+        // console.log(data);
+        if (data){
+          window.cart = data;
+          document.getElementById('output').innerHTML = `<h2>${JSON.stringify(data)}</h2>`;
+        }
+      })
+      .catch((err) => console.log(err))
+      return cart;
+    }
+    async function updateCart(){
+      if (cart) {
+        myStorage.setItem('cart', cart);
+        fetch('/cart', {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(cart)
+        })
+        .then((res) => res.json())
+        // .then((data) => console.log(data))
+      }
+      // getCart();
+    }
+  </script>
+</body>
+</html>

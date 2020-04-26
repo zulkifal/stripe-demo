@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <style>
+    .item-div{
+      width: 400px;
+      height: 400px;
+      position: relative;
+    }
+    .price{
+      position: absolute;
+      width: 100%;
+      text-align: center;
+    }
+  </style>
+  <title>Stripe API Demo</title>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row" class="mx-auto mt-4" style="width: 1200px;">
+      <div class="col-md m-4">
+        <div class="row m-4 p-2">
+          <div id="item1" class="item-div">
+              <img src="static/img/1.jpg" alt="" class="img-thumbnail">
+              <p class="price" id="item1_price">AUD5</p>
+              <button class="add_button btn-lg btn-success m-4" id="item1_add">+1 | Add to Cart</button>
+              <button class="del_button btn-lg btn-danger m-4" id="item1_del">X | Delete</button>
+          </div>
+        </div>
+        <div class="row m-4 p-4">
+          <div id="item2" class="item-div">
+            <img src="static/img/2.jpg" alt="" class="img-thumbnail">
+            <p class="price" id="item2_price">AUD10</p>
+            <button class="add_button btn-lg btn-success m-4" id="item2_add">+1 | Add to Cart</button>
+            <button class="del_button btn-lg btn-danger m-4" id="item2_del">X | Delete</button>
+          </div>
+        </div>
+        <div class="row m-4 p-4">
+          <div id="item3" class="item-div">
+            <img src="static/img/3.jpg" alt="" class="img-thumbnail">
+            <p class="price" id="item3_price">AUD15</p>
+            <button class="add_button btn-lg btn-success m-4" id="item3_add">+1 | Add to Cart</button>
+            <button class="del_button btn-lg btn-danger m-4" id="item3_del">X | Delete</button>
+          </div>
+        </div>
+        <div class="row m-4 p-4">
+          <div id="item4" class="item-div">
+            <img src="static/img/4.jpg" alt="" class="img-thumbnail">
+            <p class="price" id="item4_price">AUD7</p>
+            <button class="add_button btn-lg btn-success m-4" id="item4_add">+1 | Add to Cart</button>
+            <button class="del_button btn-lg btn-danger m-4" id="item4_del">X | Delete</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md m-4">
+        <div class="row">
+          <div id="output"></div>
+        </div>
+        <div class="row m-4">
+          <a href="/checkout" id="checkout" class="badge badge-danger" style="width: 100%; font-size: 200%;">Checkout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    var cart;
+    fetch('/cart')
+      .then(function (res) {
+        if (res.status == 200) {
+          return res.json();
+        }
+      })
+      .then((data) => render_cart(data))
+
+    document.querySelectorAll(".add_button")
+      .forEach((item) => { item.addEventListener('click', addToCart) });
+
+    document.querySelectorAll(".del_button")
+      .forEach((item) => { item.addEventListener('click', delFromCart) });
+
+    document.getElementById("checkout").addEventListener("onclick", function () {
+      window.location.href += "/checkout";
+    })
+    function addToCart(e) {
+      var item_id = e.target.id.split("_")[0];
+
+      fetch('/cart')
+        .then(function (res) {
+          if (res.status == 200) {
+            return res.json();
+          }
+        })
+        .then((data) => {
+          if (data) {
+            cart = data;
+            if (cart["items"]) {
+              if (cart["items"][item_id]) {
+                cart["items"][item_id]["qty"] = cart["items"][item_id]["qty"] + 1;
+              }
+              else {
+                cart["items"][item_id] = {};
+                cart["items"][item_id]["qty"] = 1;
+                cart["items"][item_id]["price"] = Number(document.getElementById(item_id + "_price").innerText.split("AUD")[1]);
+              }
+            }
+            render_cart(cart);
+            return cart;
+          }
+        })
+        .then((data) => {
+          fetch('/cart', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+          })
+            .then((res) => res.json())
+        })
+        .catch((err) => console.log(err))
+    }
+
+    function delFromCart(e) {
+      var item_id = e.target.id.split("_")[0];
+
+      fetch('/cart')
+        .then(function (res) {
+          if (res.status == 200) {
+            return res.json();
+          }
+        })
+        .then((data) => {
+          if (data) {
+            cart = data;
+            if (cart["items"][item_id]) {
+              delete cart["items"][item_id];
+            }
+            render_cart(cart);
+            return cart;
+          }
+        })
+        .then((data) => {
+          fetch('/cart', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+          })
+            .then((res) => res.json())
+        })
+        .catch((err) => console.log(err))
+    }
+
+    function render_cart(cart_obj) {
+      let total = 0;
+      let cart_html = '<h2>Cart</h2><hr/>';
+      items = cart_obj["items"];
+      for (key in items) {
+        total += items[key]["price"] * items[key]["qty"];
+        cart_html += `<div>${key}</div>`;
+        cart_html += `<div>Price: ${items[key]["price"]}</div>`;
+        cart_html += `<div>Quantity: ${items[key]["qty"]}</div>`;
+        cart_html += `<hr/>`;
+      }
+      cart_html += `<div>Total: ${total}</div>`;
+      cart_html += `<div class="font-weight-bold mt-4">cart: ${JSON.stringify(cart_obj)}</div>`;
+      document.getElementById('output').innerHTML = `${cart_html}`;
+    }
+
+
+  </script>
+</body>
+
+</html>
