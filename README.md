@@ -42,3 +42,5 @@ python server.py
 ```
 
 7. Go to `localhost:5000/` in your browser to see the demo
+
+8. To accept traffic on all available IPs, replace `app.run()` in `server.py` with `app.run(host="0.0.0.0")` and re-run.
