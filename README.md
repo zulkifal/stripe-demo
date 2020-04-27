@@ -140,7 +140,7 @@ def calculate_order_amount(items):
 
 ### Requirements
 
-- Python 3
+- Python 3.6
 - MacOS/Unix
 
 ### Steps
