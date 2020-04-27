@@ -130,6 +130,7 @@ def calculate_order_amount(items):
 
 ### Possible Issues/Improvements
 
+1. Implement webhooks to process orders in the background.
 1. We are still relying on the client side `js` to set the `currency` of the payment. The server should have the logic to better handle that.
 2. Passing the whole `cart` object between client/server can be slow for larger `carts`.
 3. We shouldn't really update the `cart's` UUID on each `POST` request. The better logic could be that we only update UUID if state has been actually mutated.
