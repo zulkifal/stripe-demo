@@ -146,38 +146,20 @@ def calculate_order_amount(items):
 ### Steps
 1. Clone this repo
 
-2. Create `.env` file using `example.env` in the root directory of this repo.
+2. Build image
 
 ```
-cp example.env .env
+docker build -t <specify intended tag here> .
 ```
 
-3. Udpdate `.env` with your API keys from Stripe [Developer Dashboard](https://stripe.com/docs/development#api-keys). You will need a Stripe account.
+3. Udpdate `.env` with your API keys from Stripe [Developer Dashboard](https://stripe.com/docs/develo
 
 ```
 STRIPE_PUBLISHABLE_KEY=<replace-with-your-publishable-key>
 STRIPE_SECRET_KEY=<replace-with-your-secret-key>
+docker run -dit -p 5000:5000 -e STRIPE_PUBLISHABLE_KEY=<replace-with-your-publishable-key> -e STRIPE_SECRET_KEY=<replace-with-your-secret-key> <image tag from the build step>
 ```
 
-4. Create and activate a new virtual environment
+4. Go to `localhost:5000/` in your browser to see the demo
 
-```
-python3 -m venv venv
-source venv/bin/activate
-```
 
-5. Install dependencies
-
-```
-pip install -r requirements.txt
-```
-
-6. Export and run the application
-
-```
-python server.py
-```
-
-7. Go to `localhost:5000/` in your browser to see the demo
-
-8. To accept traffic on all available IPs, replace `app.run()` in `server.py` with `app.run(host="0.0.0.0")` and re-run.
