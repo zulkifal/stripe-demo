@@ -172,7 +172,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-6. Export and run the application
+6. Run the application
 
 ```
 python server.py "0.0.0.0" # for listening on all IP interfaces
