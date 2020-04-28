@@ -144,7 +144,11 @@ def calculate_order_amount(items):
 - MacOS/Unix
 
 ### Steps
-1. Clone this repo
+1. Clone and `cd` to this repo on local machine
+
+```
+cd stripe-demo
+```
 
 2. Create `.env` file using `example.env` in the root directory of this repo.
 
