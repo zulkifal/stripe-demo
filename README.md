@@ -175,9 +175,12 @@ pip install -r requirements.txt
 6. Export and run the application
 
 ```
-python server.py
+python server.py "0.0.0.0" # for listening on all IP interfaces
+
+# or
+
+python server.py # for localhost only
 ```
 
-7. Go to `localhost:5000/` in your browser to see the demo
+7. Go to `http://YOUR_IP_ADDR:5000/` or `http://localhost:5000/` in your browser to see the demo
 
-8. To accept traffic on all available IPs, replace `app.run()` in `server.py` with `app.run(host="0.0.0.0")` and re-run.

@@ -6,6 +6,7 @@ import stripe
 import json
 import os
 import uuid
+import sys
 
 from flask import Flask, render_template, jsonify, request, session, send_from_directory
 from dotenv import load_dotenv, find_dotenv
@@ -111,4 +112,7 @@ def create_payment():
 
 
 if __name__ == "__main__":
-    app.run()
+    if len(sys.argv) == 2:
+        app.run(host=sys.argv[1])
+    else:
+        app.run()
